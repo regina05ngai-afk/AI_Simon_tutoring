@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MATH1205 · Socratic Tutor — Set Theory (Mockup)</title>
+<style>
+:root{
+  --bg:#f6f3ff;--card:#fff;--ink:#2a2440;--muted:#7a7394;
+  --brand:#8b5cf6;--brand2:#a78bfa;--brand-d:#6d28d9;
+  --line:#e9e4f7;--radius:18px;
+  --shadow:0 4px 20px rgba(109,40,217,.08);
+  --shadow-hover:0 12px 32px rgba(109,40,217,.16);
+  --good:#16a34a;--bad:#dc2626;--gold:#f59e0b;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:"Segoe UI",-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  background:radial-gradient(1200px 600px at 10% -10%,rgba(167,139,250,.18),transparent 60%),
+             radial-gradient(1000px 500px at 100% 0%,rgba(244,114,182,.10),transparent 55%),
+             linear-gradient(180deg,#f7f4ff,#f3f0fb 320px);
+  color:var(--ink);min-height:100vh}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 16px 30px}
+header{background:linear-gradient(120deg,#a78bfa,#8b5cf6 45%,#7c3aed);color:#fff;border-radius:var(--radius);
+  padding:18px 22px;box-shadow:0 10px 30px rgba(124,58,237,.28);position:relative;overflow:hidden}
+header::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;
+  background:radial-gradient(circle,rgba(255,255,255,.25),transparent 70%)}
+header h1{margin:0;font-size:20px;font-weight:800}
+header .sub{opacity:.95;margin-top:4px;font-size:13px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px 14px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;min-width:86px}
+.stat .v{font-size:19px;font-weight:800;color:var(--brand-d)}
+.stat .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.bar{height:12px;border-radius:99px;background:#ede9fe;overflow:hidden;margin-top:10px}
+.bar>div{height:100%;width:0;background:linear-gradient(90deg,#a78bfa,#7c3aed);transition:width .4s}
+.bar-label{font-size:12px;color:var(--muted);margin:2px 0 0}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;margin-top:16px;align-items:start}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.side{order:-1}}
+
+/* ---- chat ---- */
+.chat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+  display:flex;flex-direction:column;height:640px;overflow:hidden}
+.chat-head{background:linear-gradient(120deg,#ede9fe,#f5f3ff);padding:10px 14px;font-weight:700;color:var(--brand-d);
+  display:flex;align-items:center;gap:8px}
+.chat-head .dot{width:9px;height:9px;border-radius:50%;background:var(--good);display:inline-block}
+.chat-head .mode{font-size:12px;color:var(--muted);margin-left:auto}
+.msgs{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:82%;padding:10px 14px;border-radius:14px;line-height:1.55;font-size:14px;white-space:pre-wrap}
+.msg.ai{background:#f3efff;border:1px solid #e6d9ff;align-self:flex-start;border-top-left-radius:4px}
+.msg.me{background:linear-gradient(120deg,#8b5cf6,#7c3aed);color:#fff;align-self:flex-end;border-top-right-radius:4px}
+.msg .who{display:block;font-size:10.5px;color:var(--muted);margin-bottom:3px}
+.msg.me .who{color:rgba(255,255,255,.75)}
+.msg .math{display:block;background:#faf8ff;border:1px solid var(--line);border-radius:10px;padding:6px 10px;
+  font-family:"Cambria Math","Segoe UI Symbol",serif;font-size:15px;margin-top:4px}
+.typing{display:inline-flex;gap:4px;align-items:center;color:var(--muted);font-size:13px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--brand);animation:bl 1s infinite}
+@keyframes bl{0%,100%{opacity:.25}50%{opacity:1}}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px}
+.chip{background:#fff;border:1px solid var(--line);border-radius:99px;padding:6px 12px;font-size:12.5px;color:var(--brand-d);
+  cursor:pointer;box-shadow:var(--shadow);transition:transform .1s}
+.chip:hover{transform:translateY(-1px);border-color:var(--brand2)}
+.chip:disabled{opacity:.5;cursor:default}
+.inrow{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:#fff}
+.inrow input{flex:1;padding:11px 13px;font-size:14px;border:1px solid var(--line);border-radius:12px;font-family:inherit;background:#faf8ff}
+.inrow input:focus{outline:none;border-color:var(--brand2);box-shadow:0 0 0 3px rgba(167,139,250,.2)}
+.inrow button{border:none;border-radius:12px;padding:0 18px;background:linear-gradient(120deg,var(--brand2),var(--brand));
+  color:#fff;font-weight:700;cursor:pointer;box-shadow:0 6px 16px rgba(124,58,237,.25)}
+
+/* ---- side panel ---- */
+.side{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:16px;display:flex;flex-direction:column;gap:14px}
+.side h3{margin:0;font-size:13px;font-weight:800;color:var(--brand-d);text-transform:uppercase;letter-spacing:.5px}
+.mastery-row{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.mastery-row .n{flex:1;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mastery-row .mb{flex:0 0 90px;height:8px;border-radius:99px;background:#ede9fe;overflow:hidden}
+.mastery-row .mb>div{height:100%;width:0;background:linear-gradient(90deg,#34d399,#16a34a);transition:width .4s}
+.mastery-row .mv{width:34px;text-align:right;font-weight:700;font-size:12px;color:var(--muted)}
+.badges{display:flex;flex-wrap:wrap;gap:8px}
+.badge{width:44px;height:44px;border-radius:12px;background:#f3f0fb;display:flex;align-items:center;justify-content:center;
+  font-size:22px;filter:grayscale(1);opacity:.4;position:relative;cursor:default}
+.badge.earned{filter:none;opacity:1;background:linear-gradient(135deg,#fde68a,#f59e0b)}
+.badge .tip{position:absolute;bottom:-2px;right:-2px;font-size:9px}
+.weak{background:#fdecec;border:1px solid #f3c2c2;border-radius:12px;padding:10px 12px;font-size:12.5px;color:#b23b3b}
+.weak b{display:block;margin-bottom:4px}
+.weak ul{margin:4px 0 0;padding-left:16px}
+.weak li{font-size:12px}
+.note{font-size:11.5px;color:var(--muted);line-height:1.5;background:#faf8ff;border:1px solid var(--line);border-radius:12px;padding:10px}
+
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
+.confetti span{position:absolute;top:-12px;width:9px;height:14px;opacity:.9;animation:fall 3.4s linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🧩 MATH1205 · Socratic Tutor <span style="font-size:12px;opacity:.9">(Set Theory pilot)</span></h1>
+    <div class="sub">I'll ask you one question at a time until it clicks — no straight answers, just guided discovery. Grounded in Chapter 2.</div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="v" id="xp">0</div><div class="l">XP</div></div>
+    <div class="stat"><div class="v" id="lvl">1</div><div class="l">Level</div></div>
+    <div class="stat"><div class="v" id="streak">0</div><div class="l">🔥 Streak</div></div>
+    <div class="stat"><div class="v" id="mastery">0%</div><div class="l">Mastery</div></div>
+    <div class="stat"><div class="v" id="mode">—</div><div class="l">Engine</div></div>
+  </div>
+  <div class="bar"><div id="prog"></div></div>
+  <div class="bar-label" id="progLabel">Module progress</div>
+
+  <div class="layout">
+    <div class="chat">
+      <div class="chat-head"><span class="dot"></span> Set Theory · Socratic session
+        <span class="mode" id="modeLabel">engine: —</span></div>
+      <div class="msgs" id="msgs"></div>
+      <div class="chips" id="chips"></div>
+      <div class="inrow">
+        <input id="in" placeholder="Type your answer or ask a question… (e.g. “explain ∈ vs ⊆”)">
+        <button id="send">➤</button>
+      </div>
+    </div>
+
+    <div class="side">
+      <h3>📊 Concept mastery</h3>
+      <div id="masteryList"></div>
+      <h3>🏅 Badges</h3>
+      <div class="badges" id="badges"></div>
+      <h3>🎯 Weak spots</h3>
+      <div id="weakBox"></div>
+      <div class="note"><b>Learning analytics</b> — every answer updates your per-concept mastery, XP, streak and weak-spot queue (saved in your browser). This is the layer Gemini AI Mode doesn't give you.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   MOCKUP · MATH1205 Set Theory Socratic Tutor
+   - Calls the Poe API for free-form answers (streaming SSE).
+   - Falls back to a local rule-based Socratic tutor so the
+     demo always works (e.g. if the key/network is unavailable).
+   ============================================================ */
+const POE_KEY = "sk-poe-saCiFtqum2G9df_4eXU5GJK-ENJOap1CbdpY1aR1u_8";
+const POE_BOT = "Sage";
+const USE_POE = true;            // set false to force the local tutor
+
+/* ---------- course data (Set Theory pilot) ---------- */
+const CONCEPTS = [
+  {id:"sets",    name:"Sets & Elements",  emoji:"📦"},
+  {id:"subset",  name:"Subsets",          emoji:"⊆"},
+  {id:"card",    name:"Cardinality",      emoji:"🔢"},
+  {id:"power",   name:"Power Sets",       emoji:"⚡"},
+  {id:"ops",     name:"Set Operations",   emoji:"∪"},
+  {id:"func",    name:"Functions",        emoji:"ƒ"},
+  {id:"rel",     name:"Relations",        emoji:"🔗"}
+];
+
+/* Socratic question bank (used by the local tutor + quick quiz) */
+const QUESTIONS = [
+  {c:"sets",  q:"Is the empty set ∅ the same set as {∅}?",
+   opts:["Yes, they're identical","No, one has an element"],
+   a:1, xp:10, exp:"∅ is an empty box; {∅} is a box containing an empty box. They are different sets."},
+  {c:"sets",  q:"How many distinct elements does {1, 2, 2, 3, 3, 3} have?",
+   opts:["6","3","5","2"], a:1, xp:10,
+   exp:"Duplicates don't count — a set keeps only distinct objects, so |{1,2,2,3,3,3}| = 3."},
+  {c:"subset",q:"For S = {1, 2, {3, 4}}, is {3, 4} ⊆ S?",
+   opts:["True","False"], a:1, xp:15,
+   exp:"Trap! {3,4} is an element of S, not a subset. The raw numbers 3 and 4 are not direct elements of S, so {3,4} ⊆ S is False. ({3,4} ∈ S is True.)"},
+  {c:"subset",q:"For S = {1, 2, {3, 4}}, is {{3, 4}} ⊆ S?",
+   opts:["True","False"], a:0, xp:15,
+   exp:"True — unpack the outer brackets: {{3,4}} → {3,4}, which IS a direct element of S."},
+  {c:"card",  q:"If |S| = 3, what is |P(S)| (the size of the power set)?",
+   opts:["3","6","8","9"], a:2, xp:15,
+   exp:"|P(S)| = 2^|S| = 2^3 = 8. The power set has all 2^n subsets."},
+  {c:"ops",   q:"A = {1,3,5}, B = {1,2,3}. What is A ∪ B?",
+   opts:["{1,2,3,5}","{1,3}","{2,5}","{1,2,3}"], a:0, xp:10,
+   exp:"A ∪ B = {1,2,3,5} — everything in A or B (or both)."},
+  {c:"ops",   q:"A = {1,3,5}, B = {1,2,3}. What is A ∩ B?",
+   opts:["{1,3}","{1,2,3,5}","{2,5}","{5}"], a:0, xp:10,
+   exp:"A ∩ B = {1,3} — the elements in both sets."},
+  {c:"ops",   q:"A = {1,3,5}, B = {1,2,3}. By inclusion–exclusion, |A ∪ B| = ?",
+   opts:["4","6","5","3"], a:0, xp:15,
+   exp:"|A∪B| = |A| + |B| − |A∩B| = 3 + 3 − 2 = 4."},
+  {c:"func",  q:"A function f: A → B is injective (one-to-one) when…",
+   opts:["distinct inputs map to distinct outputs","every output is hit","it has an inverse","it is onto"], a:0, xp:10,
+   exp:"Injective means distinct inputs map to distinct outputs (no two inputs share an output)."},
+  {c:"rel",   q:"An equivalence relation must be…",
+   opts:["reflexive, symmetric, transitive","reflexive only","symmetric only","transitive only"], a:0, xp:10,
+   exp:"An equivalence relation is reflexive, symmetric AND transitive; it partitions the set into equivalence classes."}
+];
+
+const BADGES = [
+  {id:"first",  name:"First Spark",      icon:"✨", need:()=>stats.answered>=1},
+  {id:"streak", name:"On Fire",          icon:"🔥", need:()=>stats.streak>=3},
+  {id:"subset", name:"Subset Slayer",    icon:"🎯", need:()=>mastery("subset")>=60},
+  {id:"power",  name:"Power Set Pro",    icon:"⚡", need:()=>mastery("power")>=60},
+  {id:"ops",    name:"Operation Ace",    icon:"∪", need:()=>mastery("ops")>=60},
+  {id:"master", name:"Master of Sets",   icon:"👑", need:()=>overall()>=80}
+];
+
+/* ---------- state & analytics ---------- */
+const KEY="m1205_chatbot";
+let stats={xp:0,streak:0,answered:0,correct:0,engine:"—"};
+let masteryMap={}; CONCEPTS.forEach(c=>masteryMap[c.id]={n:0,ok:0});
+let session={concept:null,idx:0,active:false};
+
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||"{}");
+  stats=d.stats||stats; masteryMap=d.masteryMap||masteryMap;}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({stats,masteryMap}));}catch(e){}}
+function level(){return 1+Math.floor(stats.xp/100);}
+function mastery(id){const m=masteryMap[id];return m.n?Math.round(100*m.ok/m.n):0;}
+function overall(){const ids=CONCEPTS.map(c=>c.id);const tot=ids.reduce((a,i)=>a+mastery(i),0);return Math.round(tot/ids.length);}
+function refresh(){
+  $("#xp").textContent=stats.xp; $("#lvl").textContent=level();
+  $("#streak").textContent=stats.streak; $("#mastery").textContent=overall()+"%";
+  $("#mode").textContent=stats.engine==="poe"?"Poe API":"Local";
+  $("#modeLabel").textContent="engine: "+(stats.engine==="poe"?"Poe API":"local tutor");
+  $("#prog").style.width=Math.min(100,overall())+"%";
+  $("#progLabel").textContent="Overall mastery: "+overall()+"%";
+  renderMastery(); renderBadges(); renderWeak();
+}
+function award(n){stats.xp+=n;save();refresh();}
+function bump(id,ok){const m=masteryMap[id];m.n++;if(ok)m.ok++;save();refresh();}
+
+/* ---------- UI helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function addAI(t,math){const d=document.createElement("div");d.className="msg ai";
+  d.innerHTML="<span class='who'>🧩 Tutor</span>"+esc(t);
+  if(math)d.innerHTML+="<span class='math'>"+esc(math)+"</span>";
+  $("#msgs").appendChild(d);scroll();}
+function addMe(t){const d=document.createElement("div");d.className="msg me";
+  d.innerHTML="<span class='who'>You</span>"+esc(t);$("#msgs").appendChild(d);scroll();}
+function addTyping(){const d=document.createElement("div");d.className="msg ai";
+  d.innerHTML="<span class='who'>🧩 Tutor</span><span class='typing'>thinking<i></i><i></i><i></i></span>";
+  d.id="typing";$("#msgs").appendChild(d);scroll();return d;}
+function scroll(){$("#msgs").scrollTop=1e9;}
+function confetti(){const c=document.createElement("div");c.className="confetti";
+  const colors=["#a78bfa","#8b5cf6","#f472b6","#34d399","#fbbf24"];
+  for(let i=0;i<60;i++){const s=document.createElement("span");s.style.left=Math.random()*100+"%";
+    s.style.background=colors[i%colors.length];s.style.animationDelay=(Math.random()*2)+"s";c.appendChild(s);}
+  document.body.appendChild(c);setTimeout(()=>c.remove(),3600);}
+
+function renderMastery(){
+  $("#masteryList").innerHTML=CONCEPTS.map(c=>{
+    const m=mastery(c.id);
+    return `<div class="mastery-row"><span class="n">${c.emoji} ${esc(c.name)}</span>
+      <span class="mb"><div style="width:${m}%"></div></span><span class="mv">${m}%</span></div>`;
+  }).join("");
+}
+function renderBadges(){
+  $("#badges").innerHTML=BADGES.map(b=>{
+    const ok=b.need();
+    return `<div class="badge ${ok?'earned':''}" title="${esc(b.name)}">${b.icon}${ok?'<span class="tip">✓</span>':''}</div>`;
+  }).join("");
+}
+function renderWeak(){
+  const weak=CONCEPTS.filter(c=>mastery(c.id)<50 && masteryMap[c.id].n>0);
+  $("#weakBox").innerHTML=weak.length
+    ? `<div class="weak"><b>Review these</b><ul>${weak.map(c=>`<li>${c.emoji} ${esc(c.name)}</li>`).join("")}</ul></div>`
+    : `<div class="muted" style="font-size:12.5px">No weak spots yet — keep going! 🎉</div>`;
+}
+
+/* ---------- Poe API (streaming) ---------- */
+const SYSTEM_PROMPT =
+"You are a patient Socratic tutor for MATH1205 Discrete Mathematics, Chapter 2 (Set Theory). "+
+"Ground every answer in the course material: sets & elements, subsets (∈ vs ⊆), cardinality, "+
+"power sets, set operations (∪ ∩ − ⊕ complement), inclusion-exclusion, De Morgan's laws, "+
+"functions (injective/surjective/bijective, inverse, composition), and relations "+
+"(reflexive/symmetric/transitive, equivalence relations). "+
+"Teach Socratically: ask ONE question at a time, use analogies (e.g. sets as cardboard boxes), "+
+"praise correct answers, gently correct mistakes, and warn about common 'traps'. "+
+"Keep answers concise (under ~120 words) and use Unicode maths symbols (∈ ⊆ ∪ ∩ ∅).";
+
+async function callPoe(userText){
+  const messages=[{role:"system",content:SYSTEM_PROMPT}];
+  // include recent history (last 6 turns) for context
+  const hist=Array.from(document.querySelectorAll(".msg")).filter(m=>m.id!=="typing").slice(-6).map(m=>{
+    const who=m.classList.contains("me")?"user":"assistant";
+    const txt=m.textContent.replace(/^You\s*/,"").replace(/^🧩 Tutor\s*/,"");
+    return {role:who,content:txt};
+  });
+  messages.push(...hist,{role:"user",content:userText});
+
+  const res=await fetch("https://api.poe.com/v2/chat",{
+    method:"POST",
+    headers:{"Authorization":"Bearer "+POE_KEY,"Content-Type":"application/json"},
+    body:JSON.stringify({bot:POE_BOT,messages})
+  });
+  if(!res.ok)throw new Error("Poe HTTP "+res.status);
+  const text=await res.text();
+  let out="";
+  for(const line of text.split(/\r?\n/)){
+    if(!line.startsWith("data:"))continue;
+    const payload=line.slice(5).trim();
+    if(!payload)continue;
+    try{const ev=JSON.parse(payload);
+      if(ev.type==="text")out+=ev.text||"";
+      else if(ev.type==="done")break;
+    }catch(e){}
+  }
+  return out.trim();
+}
+
+/* ---------- local rule-based Socratic tutor (fallback) ---------- */
+function localAnswer(q){
+  const low=q.toLowerCase();
+  if(/(^|\s)(start|begin|lesson|teach|go)(\s|$)/.test(low)||low.includes("start lesson")){
+    session.active=true;session.concept=0;session.idx=0;
+    return "Great! Let's preview Set Theory. 🎯 When you attend the lecture, focus on: (1) ∅ vs {∅}, (2) De Morgan's laws & set-identity proofs, (3) equivalence relations & partitions.\n\nQuestion 1: Is the empty set ∅ the same set as {∅}?";
+  }
+  if(low.includes("test me")||low.includes("quiz")||low.includes("practice")){
+    session.active=true;session.concept=0;session.idx=0;
+    return "Let's test your prior knowledge — one question at a time.\n\n"+QUESTIONS[0].q;
+  }
+  if(low.includes("weak")||low.includes("review")){
+    const weak=CONCEPTS.filter(c=>mastery(c.id)<50);
+    return weak.length
+      ? "Based on your analytics, review: "+weak.map(c=>c.name).join(", ")+". Ask me to explain any of them, or say “test me” to drill them."
+      : "No weak spots detected — your mastery is strong across all concepts. 👑";
+  }
+  if(low.includes("∈")||low.includes("element")||low.includes("subset symbol")||low.includes("two symbols")){
+    return "Great question — these two symbols trip everyone up.\n\n• ∈ (element of): a single raw object sitting directly inside the set's brackets. 5 ∈ {5,10,15} is True.\n• ⊆ (subset of): every item inside the left set is also in the right set. {5,10} ⊆ {5,10,15} is True.\n\nRule of thumb: ∈ checks ONE item; ⊆ checks a whole box. Want to try a quick check on these?";
+  }
+  if(low.includes("power set")||low.includes("power")){
+    return "The power set P(S) is the set of ALL subsets of S. If |S| = n, then |P(S)| = 2^n.\nExample: P({0,1}) = {∅, {0}, {1}, {0,1}} — that's 2^2 = 4 subsets.\nTry: if |S| = 3, what is |P(S)|?";
+  }
+  if(low.includes("cardinality")||low.includes("size")){
+    return "Cardinality |S| is the number of DISTINCT elements. Duplicates don't count.\nExample: |{1,2,2,3,3,3}| = 3.\nWhat is |{a,b,c,c}|?";
+  }
+  if(low.includes("example")){
+    return "Here's a concrete one: A = {1,3,5}, B = {1,2,3}.\n• A ∪ B = {1,2,3,5}\n• A ∩ B = {1,3}\n• A − B = {5}\n• |A ∪ B| = 3 + 3 − 2 = 4 (inclusion–exclusion).\nWhich of these would you like to explore more?";
+  }
+  if(low.includes("de morgan")||low.includes("identity")){
+    return "De Morgan's laws for sets:\n• A ∪ B = A ∩ B\n• A ∩ B = A ∪ B\nThey mirror the logic laws ¬(p∧q) ≡ ¬p∨¬q. The proof translates set symbols into logic symbols (slide 33–34). Want to walk through a proof?";
+  }
+  if(low.includes("function")){
+    return "A function f: A → B assigns each element of A exactly one element of B.\n• injective (one-to-one): distinct inputs → distinct outputs\n• surjective (onto): every output is hit\n• bijective: both (has an inverse)\nWhich property would you like to test?";
+  }
+  if(low.includes("relation")){
+    return "A relation on A is a set of ordered pairs. It can be reflexive, symmetric, and/or transitive. An EQUIVALENCE relation is all three, and it partitions A into equivalence classes. Want a quick check?";
+  }
+  if(low.includes("empty")||low.includes("∅")){
+    return "∅ is the empty set (no elements). {∅} is a set CONTAINING the empty set — it has one element. They are different! |∅| = 0 but |{∅}| = 1. This is a classic exam trap.";
+  }
+  if(low.includes("help")||low.includes("what can")||low.includes("hi")||low.includes("hello")){
+    return "Hi! I'm your Socratic tutor for Set Theory. Try:\n• “start lesson” — guided preview\n• “test me” — quiz your prior knowledge\n• “explain ∈ vs ⊆” — clarify symbols\n• “power sets”, “cardinality”, “functions”…\n• “review my weak spots” — analytics-driven revision";
+  }
+  // Socratic session in progress?
+  if(session.active && session.idx<QUESTIONS.length){
+    return "Let's keep going with the Socratic flow. "+QUESTIONS[session.idx].q;
+  }
+  return "Good question! I'm your Set Theory tutor. Ask me to explain a concept (∈ vs ⊆, power sets, cardinality, operations, functions, relations) or say “test me” to quiz you.";
+}
+
+/* ---------- answer evaluation (local tutor) ---------- */
+function evalAnswer(text){
+  const low=text.toLowerCase();
+  const q=QUESTIONS[session.idx];
+  if(!q)return null;
+  // Yes/No or True/False questions: map yes/true→0, no/false→1
+  if(q.opts.length===2){
+    const o0=q.opts[0].toLowerCase(), o1=q.opts[1].toLowerCase();
+    const yn=(o0.startsWith("yes")||o0.startsWith("true"))&&(o1.startsWith("no")||o1.startsWith("false"));
+    if(yn){
+      let idx=-1;
+      if(/yes|true|correct|right|identical|same/.test(low)) idx=0;
+      else if(/no|false|not|different|distinct/.test(low)) idx=1;
+      if(idx>=0) return {q, ok: idx===q.a};
+    }
+  }
+  const opt=q.opts[q.a].toLowerCase();
+  return {q, ok: low.includes(opt)};
+}
+
+/* ---------- main flow ---------- */
+async function handle(text){
+  const t=text.trim();
+  if(!t)return;
+  addMe(t); stats.answered++;
+  const typing=addTyping();
+
+  let reply=null, usedPoe=false;
+  const wasAwaiting = session.active && session.idx < QUESTIONS.length;
+
+  if(wasAwaiting){
+    // A Socratic question is open → evaluate the answer locally (deterministic)
+    const ev=evalAnswer(t);
+    if(ev){
+      if(ev.ok){stats.correct++;stats.streak++;award(ev.q.xp);bump(ev.q.c,true);
+        if(stats.streak%3===0)confetti();
+        reply="✓ Correct! "+ev.q.exp;
+      }else{stats.streak=0;bump(ev.q.c,false);
+        reply="✗ Not quite. "+ev.q.exp;
+      }
+      session.idx++;
+      if(session.idx<QUESTIONS.length){
+        reply+="\n\nNext question: "+QUESTIONS[session.idx].q;
+      }else{
+        reply+="\n\n🎉 You've completed the Socratic warm-up! Overall mastery: "+overall()+"%. Say “review my weak spots” to drill what needs work.";
+        session.active=false;
+      }
+    }else{
+      // Not an answer to the open question → treat as a free-form question
+      if(USE_POE){try{reply=await callPoe(t);usedPoe=true;}catch(e){reply=null;}}
+      if(!reply){reply=localAnswer(t);}
+    }
+  }else{
+    // Free-form question / command
+    if(USE_POE){try{reply=await callPoe(t);usedPoe=true;}catch(e){reply=null;}}
+    if(!reply){reply=localAnswer(t);}
+  }
+  stats.engine=usedPoe?"poe":"local";
+  typing.remove();
+  addAI(reply);
+  save();refresh();
+}
+
+/* ---------- wiring ---------- */
+$("#send").onclick=()=>{const v=$("#in").value;if(!v.trim())return;$("#in").value="";handle(v);};
+$("#in").addEventListener("keydown",e=>{if(e.key==="Enter")$("#send").click();});
+const CHIPS=["▶ Start lesson","🧠 Test me","∈ vs ⊆","⚡ Power sets","🔢 Cardinality","ƒ Functions","🎯 Review weak spots"];
+$("#chips").innerHTML=CHIPS.map(c=>`<button class="chip">${c}</button>`).join("");
+document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>handle(b.textContent.replace(/^[^ ]+ /,"")));
+
+load();refresh();
+addAI("Hi! I'm your Socratic tutor for MATH1205 Set Theory (Chapter 2). 🧩\n\nI'll ask you one question at a time to test your prior knowledge — no straight answers, just guided discovery.\n\nTap a chip below, or type something like “explain ∈ vs ⊆” or “start lesson”.");
+</script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MATH1205 · Customised Socratic Chatbot — Report</title>
+<style>
+:root{--bg:#f6f3ff;--card:#fff;--ink:#2a2440;--muted:#7a7394;--brand:#8b5cf6;--brand2:#a78bfa;--brand-d:#6d28d9;--line:#e9e4f7;--radius:18px;--shadow:0 4px 20px rgba(109,40,217,.08)}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;background:radial-gradient(1200px 600px at 10% -10%,rgba(167,139,250,.18),transparent 60%),linear-gradient(180deg,#f7f4ff,#f3f0fb 320px);color:var(--ink);line-height:1.65}
+.wrap{max-width:880px;margin:0 auto;padding:28px 20px 80px}
+header{background:linear-gradient(120deg,#a78bfa,#8b5cf6 45%,#7c3aed);color:#fff;border-radius:var(--radius);padding:26px 28px;box-shadow:0 10px 30px rgba(124,58,237,.28);position:relative;overflow:hidden}
+header::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(255,255,255,.25),transparent 70%)}
+header h1{margin:0;font-size:24px;font-weight:800}
+header .sub{opacity:.95;margin-top:6px;font-size:14px}
+h2{font-size:19px;margin:30px 0 8px;font-weight:800;color:var(--brand-d);border-bottom:2px solid var(--line);padding-bottom:4px}
+h3{font-size:15px;margin:16px 0 6px;font-weight:700}
+p{color:var(--ink)}
+.muted{color:var(--muted);font-size:13.5px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#f3efff;color:var(--brand-d);font-weight:700}
+code{background:#f3efff;border-radius:6px;padding:1px 6px;font-size:12.5px;color:#6d28d9}
+pre{background:#faf8ff;border:1px solid var(--line);border-radius:12px;padding:12px 16px;overflow-x:auto;font-size:12.5px}
+.btn{display:inline-block;margin:6px 8px 6px 0;border:none;border-radius:99px;padding:12px 22px;background:linear-gradient(120deg,var(--brand2),var(--brand));color:#fff;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;box-shadow:0 6px 16px rgba(124,58,237,.25)}
+.btn.alt{background:#fff;color:var(--brand-d);border:1px solid var(--line);box-shadow:var(--shadow)}
+ul,ol{padding-left:22px}
+li{margin:4px 0}
+.tag{display:inline-block;padding:3px 10px;border-radius:99px;background:linear-gradient(135deg,#ede9fe,#f5f3ff);color:var(--brand-d);font-size:12px;font-weight:700;margin-right:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📊 Customised Socratic Chatbot for MATH1205</h1>
+    <div class="sub">Report + working mockup · Pilot: Chapter 2 — Set Theory</div>
+  </header>
+
+  <p class="muted" style="margin-top:16px">
+    <span class="tag">Deliverable</span> Report + mockup chatbot
+    <span class="tag">Pilot</span> Set Theory
+    <span class="tag">Target</span> <code>gorgeousregina.simonsays.hk/courses/math1205/chatbotMockup.html</code>
+  </p>
+
+  <p><a class="btn" href="chatbotMockup.html">▶ Open the mockup chatbot</a>
+     <a class="btn alt" href="report.md">View Markdown source</a></p>
+
+  <h2>1. Executive summary</h2>
+  <p>We fetched the shared Google AI Mode (Gemini) conversation with a headless Chrome browser, analysed how the student and Gemini interacted, and used those findings to design a <strong>customised Socratic chatbot</strong> for MATH1205 Discrete Mathematics.</p>
+  <p>The pilot is <strong>Chapter 2 — Set Theory</strong>, the exact chapter the student was previewing in the shared conversation. The mockup (<code>chatbotMockup.html</code>) is a self-contained page that:</p>
+  <ul>
+    <li>calls the <strong>Poe API</strong> to power a real LLM tutor,</li>
+    <li>falls back to a <strong>local rule-based Socratic tutor</strong> when the network/API key is unavailable (so the demo always works),</li>
+    <li>adds <strong>learning analytics</strong> (per-concept mastery, XP, streak, level, weak-spot review) and <strong>gamification</strong> (badges, progress bar, confetti) that Gemini AI Mode does not offer,</li>
+    <li>renders maths cleanly and provides quick-reply chips for a smoother UX.</li>
+  </ul>
+
+  <h2>2. Source conversation analysis (Gemini AI Mode)</h2>
+  <p>The shared link (<code>share.google/aimode/GoM14STJI3R54mGbe</code>) is a Google <strong>AI Mode</strong> conversation. We rendered it with headless Chrome and extracted the full transcript. The student shared the Set Theory chapter (<code>converted - Ch2.set.txt</code>) and asked Gemini to act as a Socratic tutor before attending class.</p>
+
+  <h3>2.1 What the student did (interaction patterns)</h3>
+  <div class="card"><table>
+    <tr><th>#</th><th>Student behaviour</th><th>Example from transcript</th></tr>
+    <tr><td>1</td><td>Shared a Google Drive link expecting the AI to read it</td><td><code>review this and help me preview…</code></td></tr>
+    <tr><td>2</td><td>Explicitly requested a Socratic, one-question-at-a-time flow</td><td><code>ask me one question at a time to test my prior knowledge</code></td></tr>
+    <tr><td>3</td><td>Asked for lecture focus suggestions</td><td><code>suggest which concepts or points to focus on when I attend the lecture</code></td></tr>
+    <tr><td>4</td><td>Gave terse answers</td><td><code>1.F 2.T</code>, <code>1.F 2.F</code></td></tr>
+    <tr><td>5</td><td>Asked for clarification of symbols</td><td><code>could you explain the two symbols between elements and set</code></td></tr>
+    <tr><td>6</td><td>Asked deep, conceptual questions</td><td><code>should we assume that a set should contain elements of equal nature…</code></td></tr>
+    <tr><td>7</td><td>Fell into the "subset trap" and was corrected</td><td>answered <code>{3,4} ⊆ S</code> as True; Gemini explained it is False</td></tr>
+  </table></div>
+
+  <h3>2.2 How Gemini responded (interactive styles)</h3>
+  <ol>
+    <li><strong>Socratic scaffolding</strong> — one question at a time, difficulty escalating (cardinality → <code>∈</code> vs <code>⊆</code> → subsets of nested sets).</li>
+    <li><strong>Analogy-driven teaching</strong> — the "cardboard box" and "paper bag" analogies for sets containing sets.</li>
+    <li><strong>Praise-then-correct</strong> — "Spot on!", "You nailed it", followed by gentle correction of the trap.</li>
+    <li><strong>Lecture focus areas up front</strong> — empty set vs <code>{∅}</code>, De Morgan's laws &amp; set identity proofs, equivalence relations.</li>
+    <li><strong>Explicit next-step offers</strong> — "Move on to Power Sets or Cartesian Products next?"</li>
+    <li><strong>Emoji for warmth</strong> — 🌟, 🧠, 💡, 📦.</li>
+  </ol>
+
+  <h3>2.3 Limitations &amp; pain points observed</h3>
+  <div class="card"><table>
+    <tr><th>#</th><th>Limitation</th><th>Consequence</th></tr>
+    <tr><td>1</td><td><strong>Cannot open Google Drive files</strong></td><td>Student had to paste the whole chapter manually</td></tr>
+    <tr><td>2</td><td><strong>No learning analytics</strong></td><td>No tracking of which concepts the student struggles with, no mastery signal</td></tr>
+    <tr><td>3</td><td><strong>No gamification</strong></td><td>No XP, levels, streaks, or badges to sustain motivation</td></tr>
+    <tr><td>4</td><td><strong>Clunky maths rendering</strong></td><td>AI Mode rendered <code>S = {1,2,{3,4}}</code> as a verbose spoken string</td></tr>
+    <tr><td>5</td><td><strong>Ad-hoc curriculum</strong></td><td>Tutor improvised; no structured lesson plan or spaced repetition</td></tr>
+    <tr><td>6</td><td><strong>No visual aids</strong></td><td>No Venn diagrams, no interactive set widgets</td></tr>
+    <tr><td>7</td><td><strong>No persistence</strong></td><td>Progress lost between sessions; no per-student history</td></tr>
+  </table></div>
+
+  <h2>3. Design proposal: the customised chatbot</h2>
+
+  <h3>3.1 Architecture</h3>
+  <pre>┌────────────────────────────────────────────────────────────┐
+│  chatbotMockup.html  (single self-contained page)          │
+│                                                            │
+│  UI layer   → chat, quick-reply chips, mastery panel,      │
+│               badges, progress bar, confetti               │
+│  Tutor core → Socratic state machine (concept → question   │
+│               → evaluate → next)                           │
+│  LLM layer  → Poe API (streaming)  ──fails──▶ local        │
+│               rule-based Socratic tutor (fallback)         │
+│  Analytics  → per-concept mastery, XP, streak, level,      │
+│               weak-spot queue (localStorage)               │
+└────────────────────────────────────────────────────────────┘</pre>
+  <ul>
+    <li><strong>Poe API</strong> (<code>https://api.poe.com/v2/chat</code>, <code>Authorization: Bearer &lt;key&gt;</code>) powers free-form answers with a <strong>system prompt</strong> that enforces Socratic behaviour and grounds the tutor in the Set Theory chapter.</li>
+    <li>A <strong>local rule-based tutor</strong> mirrors the same Socratic flow when the API is unreachable, so the mockup is always demonstrable.</li>
+  </ul>
+
+  <h3>3.2 Socratic tutoring engine</h3>
+  <ul>
+    <li><strong>One question at a time</strong>, escalating difficulty (as the student requested).</li>
+    <li><strong>Lecture focus areas</strong> surfaced first (empty set vs <code>{∅}</code>, De Morgan's laws &amp; set-identity proofs, equivalence relations).</li>
+    <li><strong>Analogy + praise-then-correct</strong> response style, matching what worked in the original conversation.</li>
+    <li><strong>Quick-reply chips</strong> for common intents: <em>Start lesson</em>, <em>Test me</em>, <em>Explain ∈ vs ⊆</em>, <em>Give me an example</em>, <em>Power sets</em>, <em>Review my weak spots</em>.</li>
+  </ul>
+
+  <h3>3.3 Learning analytics</h3>
+  <div class="card"><table>
+    <tr><th>Metric</th><th>What it measures</th><th>How it helps</th></tr>
+    <tr><td><strong>Concept mastery</strong></td><td>% correct per concept (Sets &amp; Elements, Subsets, Cardinality, Power Sets, Operations, Functions, Relations)</td><td>Shows what to revise</td></tr>
+    <tr><td><strong>XP / Level</strong></td><td>Points earned per correct answer</td><td>Progress &amp; motivation</td></tr>
+    <tr><td><strong>Streak</strong></td><td>Consecutive correct answers</td><td>Encourages consistency</td></tr>
+    <tr><td><strong>Weak-spot queue</strong></td><td>Concepts with low mastery</td><td>Drives "Review my weak spots"</td></tr>
+    <tr><td><strong>Session log</strong></td><td>Every Q&amp;A stored in <code>localStorage</code></td><td>Persistence &amp; teacher insight</td></tr>
+  </table></div>
+
+  <h3>3.4 Gamification</h3>
+  <ul>
+    <li><strong>XP, levels, and a 🔥 streak counter</strong> in the header.</li>
+    <li><strong>Badges</strong> (e.g. <em>First Spark</em>, <em>Subset Slayer</em>, <em>Power Set Pro</em>, <em>Master of Sets</em>).</li>
+    <li><strong>Progress bar</strong> toward module completion.</li>
+    <li><strong>Confetti</strong> on mastery milestones.</li>
+  </ul>
+
+  <h3>3.5 Visual UI</h3>
+  <ul>
+    <li>Reuses the existing MATH1205 design language (violet gradient, cards, rounded corners) for consistency with the course site.</li>
+    <li><strong>Clean maths rendering</strong> (Unicode symbols) instead of Gemini's verbose spoken notation.</li>
+    <li><strong>Mastery panel</strong> with per-concept bars and a <strong>badge shelf</strong>.</li>
+    <li><strong>Responsive</strong> layout for desktop and mobile.</li>
+  </ul>
+
+  <h2>4. Pilot: Set Theory (Chapter 2)</h2>
+  <p>Scope drawn from <code>converted/Ch2.set.txt</code> and the existing <code>lesson/sets.html</code>:</p>
+  <ol>
+    <li><strong>Sets &amp; Elements</strong> — definition, roster / set-builder, common sets (ℕ, ℤ, ℚ, ℝ), ∅ vs <code>{∅}</code>.</li>
+    <li><strong>Subsets</strong> — <code>⊆</code>, <code>⊂</code>, <code>∅ ⊆ S</code>, the "unpack the box" subset trick.</li>
+    <li><strong>Cardinality</strong> — <code>|S|</code>, duplicates don't count.</li>
+    <li><strong>Power Sets</strong> — <code>P(S)</code>, <code>|P(S)| = 2^|S|</code>.</li>
+    <li><strong>Set Operations</strong> — <code>∪</code>, <code>∩</code>, <code>−</code>, <code>⊕</code>, complement, inclusion–exclusion, De Morgan's laws.</li>
+    <li><strong>Functions</strong> — domain/codomain/range, injective/surjective/bijective, inverse, composition.</li>
+    <li><strong>Relations</strong> — reflexive/symmetric/transitive, equivalence relations &amp; partitions.</li>
+  </ol>
+  <p>The mockup's Socratic flow mirrors the original conversation: open with lecture focus areas, then ask one escalating question at a time, using the same analogies and trap-warnings that proved effective.</p>
+
+  <h2>5. Deployment</h2>
+  <div class="card"><table>
+    <tr><th>File</th><th>Purpose</th></tr>
+    <tr><td><code>courses/math1205/chatbotMockup.html</code></td><td>The mockup chatbot (Poe API + fallback)</td></tr>
+    <tr><td><code>courses/math1205/report.html</code></td><td>This report, rendered for the web</td></tr>
+    <tr><td><code>courses/math1205/report.md</code></td><td>This report, Markdown source</td></tr>
+  </table></div>
+  <p><strong>To deploy:</strong> push these files to the GitHub Pages repo that serves <code>gorgeousregina.simonsays.hk</code>. The page will then be live at <code>https://gorgeousregina.simonsays.hk/courses/math1205/chatbotMockup.html</code>.</p>
+  <div class="card"><p class="muted">⚠️ <strong>Security note:</strong> The Poe API key is embedded in the page for this mockup. For production, move the key to a server-side proxy so it is never exposed in the browser.</p></div>
+
+  <h2>6. Roadmap</h2>
+  <ol>
+    <li><strong>Pilot validation</strong> — run the Set Theory pilot with a small group; tune the Socratic prompts and analytics.</li>
+    <li><strong>Roll out to other chapters</strong> — Logic, Combinatorics, Modular Arithmetic, Cryptography, Boolean Algebra (materials already converted).</li>
+    <li><strong>Server-side proxy</strong> — secure the Poe key and add per-student accounts.</li>
+    <li><strong>Spaced repetition</strong> — schedule weak concepts for review on later days.</li>
+    <li><strong>Teacher dashboard</strong> — aggregate analytics across students to spot common misconceptions.</li>
+    <li><strong>File upload</strong> — let students drop PDFs/text directly (fixes the #1 pain point from the original conversation).</li>
+  </ol>
+
+  <footer class="muted" style="margin-top:30px">Generated for MATH1205 · Set Theory pilot · <a href="chatbotMockup.html">Open the mockup →</a></footer>
+</div>
+</body>
+</html>
