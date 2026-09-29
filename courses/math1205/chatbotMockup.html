@@ -141,9 +141,9 @@ header .sub{opacity:.95;margin-top:4px;font-size:13px}
    - Falls back to a local rule-based Socratic tutor so the
      demo always works (e.g. if the key/network is unavailable).
    ============================================================ */
-const POE_KEY = "sk-poe-saCiFtqum2G9df_4eXU5GJK-ENJOap1CbdpY1aR1u_8";
-const POE_BOT = "Sage";
 const USE_POE = true;            // set false to force the local tutor
+// The Poe key lives server-side (Railway env POE_API_KEY). The browser only
+// calls the same-origin /api/poe proxy, so the key is never exposed.
 
 /* ---------- course data (Set Theory pilot) ---------- */
 const CONCEPTS = [
@@ -283,24 +283,15 @@ async function callPoe(userText){
   });
   messages.push(...hist,{role:"user",content:userText});
 
-  const res=await fetch("https://api.poe.com/v2/chat",{
+  // Same-origin proxy keeps the Poe key server-side (Railway env POE_API_KEY).
+  const res=await fetch("/api/poe",{
     method:"POST",
-    headers:{"Authorization":"Bearer "+POE_KEY,"Content-Type":"application/json"},
-    body:JSON.stringify({bot:POE_BOT,messages})
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({messages})
   });
   if(!res.ok)throw new Error("Poe HTTP "+res.status);
-  const text=await res.text();
-  let out="";
-  for(const line of text.split(/\r?\n/)){
-    if(!line.startsWith("data:"))continue;
-    const payload=line.slice(5).trim();
-    if(!payload)continue;
-    try{const ev=JSON.parse(payload);
-      if(ev.type==="text")out+=ev.text||"";
-      else if(ev.type==="done")break;
-    }catch(e){}
-  }
-  return out.trim();
+  const j=await res.json();
+  return (j.reply||"").trim();
 }
 
 /* ---------- local rule-based Socratic tutor (fallback) ---------- */
